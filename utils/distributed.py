@@ -69,6 +69,14 @@ def generalized_all_gather(tensors):
     
     return [torch.cat(t_list, dim=0) for t_list in tensor_list]
 import warnings
+def all_reduce(tensor):
+    """
+    Performs an all-reduce operation on the provided tensor.
+    """
+    if not is_dist_initialized():
+        return tensor
+    dist.all_reduce(tensor, op=dist.ReduceOp.SUM)
+    return tensor
 
 warnings.filterwarnings("ignore", module="torch.cuda")
 warnings.filterwarnings("ignore", module="xformers.ops.fmha.flash")
