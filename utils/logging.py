@@ -14,6 +14,8 @@ import simplejson
 
 import utils.distributed as du
 
+# Create a global logger instance
+logger = logging.getLogger(__name__)
 
 def _suppress_print():
     """
@@ -36,6 +38,8 @@ def setup_logging(cfg, log_file):
     Sets up the logging for multiple processes. Only enable the logging for the
     master process, and suppress logging for the non-master processes.
     """
+    global logger  # Declare that you are using the global variable
+
     if du.is_master_proc():
         # Enable logging for the master process.
         logging.root.handlers = []
@@ -43,7 +47,6 @@ def setup_logging(cfg, log_file):
         # Suppress logging for non-master processes.
         _suppress_print()
 
-    logger = logging.getLogger()
     logger.setLevel(logging.INFO)
     logger.propagate = False
     plain_formatter = logging.Formatter(
@@ -88,3 +91,4 @@ def log_json_stats(stats):
     json_stats = simplejson.dumps(stats, sort_keys=True, use_decimal=True)
     logger = get_logger(__name__)
     logger.info("{:s}".format(json_stats))
+
